@@ -25,7 +25,7 @@ export class PenjadwalanController {
 
   // 5.a. Menambah Penjadwalan (mahasiswa only)
   @Post()
-  @Roles('mahasiswa')
+  @Roles('mahasiswa', 'admin')
   create(@Body() createPenjadwalanDto: CreatePenjadwalanDto) {
     return this.penjadwalanService.create(createPenjadwalanDto);
   }
@@ -39,7 +39,7 @@ export class PenjadwalanController {
 
   // Filter penjadwalan
   @Get('filter')
-  @Roles('mahasiswa', 'mahasiswa')
+  @Roles('mahasiswa', 'admin')
   findByFilter(
     @Query('tahun_ajaran') tahun_ajaran?: string,
     @Query('semester') semester?: number,
@@ -56,14 +56,14 @@ export class PenjadwalanController {
 
   // 5.b. Mengambil Data Penjadwalan (Detail by ID)
   @Get(':id')
-  @Roles('mahasiswa', 'mahasiswa')
+  @Roles('mahasiswa', 'admin')
   findOne(@Param('id') id: string) {
     return this.penjadwalanService.findOne(+id);
   }
 
   // 5.d. Mengubah Data Penjadwalan (mahasiswa only)
   @Put(':id')
-  @Roles('mahasiswa')
+  @Roles('mahasiswa', 'admin')
   update(
     @Param('id') id: string,
     @Body() updatePenjadwalanDto: UpdatePenjadwalanDto,
@@ -73,7 +73,7 @@ export class PenjadwalanController {
 
   // 5.e. Menghapus Data Penjadwalan (mahasiswa only)
   @Delete(':id')
-  @Roles('mahasiswa')
+  @Roles('mahasiswa', 'admin')
   remove(@Param('id') id: string) {
     return this.penjadwalanService.remove(+id);
   }

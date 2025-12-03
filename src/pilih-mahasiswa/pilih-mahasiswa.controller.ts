@@ -19,7 +19,7 @@ export class PilihMahasiswaController {
   }
 
   @Post('jadwal')
-  @Roles('mahasiswa')
+  @Roles('mahasiswa', 'admin')
   async lihatJadwal(@Body() jadwalMahasiswaDto: JadwalMahasiswaDto) {
     return await this.pilihMahasiswaService.lihatJadwal(jadwalMahasiswaDto);
   }
@@ -39,7 +39,7 @@ export class PilihMahasiswaController {
   }
 
   @Delete('batalkan-pilihan/:mahasiswa_id/:matakuliah_id')
-  @Roles('mahasiswa')
+  @Roles('mahasiswa', 'admin')
   async batalkanPilihan(
     @Param('mahasiswa_id') mahasiswa_id: string,
     @Param('matakuliah_id') matakuliah_id: string,
