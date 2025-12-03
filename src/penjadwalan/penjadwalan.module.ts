@@ -2,19 +2,12 @@
 import { Module } from '@nestjs/common';
 import { PenjadwalanService } from './penjadwalan.service';
 import { PenjadwalanController } from './penjadwalan.controller';
-import { PrismaModule } from '../prisma/prisma.module';
-import { JwtModule } from '@nestjs/jwt';
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthModule } from '../auth/auth.module'; // IMPORT AuthModule
 
 @Module({
-  imports: [
-    PrismaModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'Secret_Key',
-      signOptions: { expiresIn: '1d' },
-    }),
-  ],
+  imports: [AuthModule], // TAMBAHKAN INI
   controllers: [PenjadwalanController],
-  providers: [PenjadwalanService],
-  exports: [PenjadwalanService],
+  providers: [PenjadwalanService, PrismaService],
 })
 export class PenjadwalanModule {}

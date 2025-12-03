@@ -245,7 +245,7 @@ export class PilihMahasiswaService {
       const matakuliahDipilih = krsLengkap.map((krs: any) => {
         const jadwal = krs.matakuliah.penjadwalan.length > 0 
           ? krs.matakuliah.penjadwalan[0].jadwal 
-          : 'Jadwal belum ditentukan';
+          : 'Jadwal belum tersedia';
         
         return {
           id_matakuliah: krs.matakuliah.id_matakuliah,
@@ -355,7 +355,7 @@ export class PilihMahasiswaService {
             id_matakuliah: matakuliah.id_matakuliah,
             nama_matakuliah: matakuliah.nama_matakuliah,
             sks: matakuliah.sks,
-            jadwal: 'Jadwal belum ditentukan',
+            jadwal: 'Jadwal belum tersedia',
             dosen: matakuliah.dosen?.nama_dosen || 'Belum ada dosen',
             tahun_ajaran: '-',
             semester: '-',
@@ -367,8 +367,8 @@ export class PilihMahasiswaService {
 
       // Urutkan jadwal
       jadwalFormatted.sort((a, b) => {
-        if (a.jadwal === 'Jadwal belum ditentukan') return 1;
-        if (b.jadwal === 'Jadwal belum ditentukan') return -1;
+        if (a.jadwal === 'Jadwal belum tersedia') return 1;
+        if (b.jadwal === 'Jadwal belum tersedia') return -1;
         
         const hariOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
         const hariA = a.jadwal.split(' ')[0];
@@ -462,7 +462,7 @@ export class PilihMahasiswaService {
       const matakuliahTersedia = semuaMatakuliah.map((matakuliah: any) => {
         const jadwal = matakuliah.penjadwalan.length > 0 
           ? matakuliah.penjadwalan[0].jadwal 
-          : 'Jadwal belum ditentukan';
+          : 'Jadwal belum tersedia';
         
         return {
           id_matakuliah: matakuliah.id_matakuliah,

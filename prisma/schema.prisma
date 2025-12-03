@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output = "./generated"
+  output   = "./generated"
 }
 
 model User {
@@ -40,13 +40,16 @@ model Mahasiswa {
 }
 
 model Matakuliah {
-  id_matakuliah   Int    @id @default(autoincrement())
+  id_matakuliah   Int           @id @default(autoincrement())
   nama_matakuliah String
   sks             Int
-  id_dosen Int
-  dosen    Dosen @relation(fields: [id_dosen], references: [id])
-  penjadwalan Penjadwalan[]
-  krs         Krs[]
+  id_dosen        Int
+  dosen           Dosen         @relation(fields: [id_dosen], references: [id])
+  penjadwalan     Penjadwalan[]
+  krs             Krs[]
+
+  @@unique([nama_matakuliah, id_dosen])
+  @@map("matakuliah")
 }
 
 model Penjadwalan {
@@ -62,10 +65,11 @@ model Penjadwalan {
 }
 
 model Krs {
-  id            Int @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   mahasiswa_id  Int
   matakuliah_id Int
-  mahasiswa  Mahasiswa  @relation(fields: [mahasiswa_id], references: [id])
-  matakuliah Matakuliah @relation(fields: [matakuliah_id], references: [id_matakuliah])
+  mahasiswa     Mahasiswa  @relation(fields: [mahasiswa_id], references: [id])
+  matakuliah    Matakuliah @relation(fields: [matakuliah_id], references: [id_matakuliah])
+
   @@unique([mahasiswa_id, matakuliah_id])
 }

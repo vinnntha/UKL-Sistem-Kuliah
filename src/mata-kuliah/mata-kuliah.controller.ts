@@ -1,111 +1,126 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-  NotFoundException,
-} from '@nestjs/common';
+// mata-kuliah/mata-kuliah.controller.ts - DIPERBAIKI
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards, Query, Request } from '@nestjs/common';
 import { MataKuliahService } from './mata-kuliah.service';
-import { CreateMataKuliahDto } from './dto/create-mata-kuliah.dto';
-import { UpdateMataKuliahDto } from './dto/update-mata-kuliah.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guards';
 import { RolesGuard } from 'src/auth/roles.guards';
 import { Roles } from 'src/auth/roles.decotator';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('admin')
 @Controller('api/matakuliah')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class MataKuliahController {
   constructor(private readonly matakuliahService: MataKuliahService) {}
 
   @Post()
-  async create(@Body() dto: CreateMataKuliahDto) {
-    const mk = await this.matakuliahService.create(dto);
-
-    return {
-      status: 'success',
-      message: 'Matakuliah added successfully',
-      data: {
-        id_matakuliah: mk.id_matakuliah,
-        nama_matakuliah: mk.nama_matakuliah,
-        id_dosen: mk.id_dosen,
-        sks: mk.sks,
-      },
-    };
+  @Roles('admin')
+  async create(@Body() body: any) {
+    console.log('📨 POST /matakuliah', body);
+    // PERBAIKAN: Gunakan createMatakuliah, bukan create
+    return await this.matakuliahService.createMatakuliah(body);
   }
 
   @Get()
-  async findAll() {
-    const list = await this.matakuliahService.findAll();
-
-    return {
-      status: 'success',
-      message: 'Data matakuliah retrieved successfully',
-      data: list.map((mk) => ({
-        id_matakuliah: mk.id_matakuliah,
-        nama_matakuliah: mk.nama_matakuliah,
-        id_dosen: mk.id_dosen,
-        sks: mk.sks,
-      })),
-    };
+  @Roles('admin', 'mahasiswa')
+  async findAll(
+    @Query('nama') nama?: string,
+    @Query('id_dosen') id_dosen?: string,
+    @Query('sks') sks?: string
+  ) {
+    console.log('📨 GET /matakuliah', { nama, id_dosen, sks });
+    
+    // Build filters object
+    const filters: any = {};
+    if (nama) filters.nama = nama;
+    if (id_dosen) filters.id_dosen = parseInt(id_dosen);
+    if (sks) filters.sks = parseInt(sks);
+    
+    // PERBAIKAN: Gunakan findAll dengan filters
+    return await this.matakuliahService.findAll(filters);
   }
 
-  @Get(':id_matakuliah')
-  async findOne(@Param('id_matakuliah') idParam: string) {
-    const id = parseInt(idParam, 10);
-    const mk = await this.matakuliahService.findOneById(id);
+  @Get(':id')
+  @Roles('admin', 'mahasiswa')
+  async findOne(@Param('id') id: string) {
+    console.log(`📨 GET /matakuliah/${id}`);
+    // PERBAIKAN: Gunakan findOne, bukan findOneById
+    return await this.matakuliahService.findOne(+id);
+  }
 
-    if (!mk) {
-      throw new NotFoundException({
-        status: 'error',
-        message: 'Matakuliah not found',
-      });
+  @Put(':id')
+  @Roles('admin')
+  async update(@Param('id') id: string, @Body() body: any) {
+    console.log(`📨 PUT /matakuliah/${id}`, body);
+    // PERBAIKAN: Gunakan update, bukan updateById
+    return await this.matakuliahService.update(+id, body);
+  }
+
+  @Delete(':id')
+  @Roles('admin')
+  async remove(@Param('id') id: string) {
+    console.log(`📨 DELETE /matakuliah/${id}`);
+    // PERBAIKAN: Gunakan remove, bukan removeById
+    return await this.matakuliahService.remove(+id);
+  }
+
+  @Get('check/duplicate')
+  @Roles('admin')
+  async checkDuplicate(
+    @Query('nama_matakuliah') nama_matakuliah: string,
+    @Query('id_dosen') id_dosen: string,
+    @Query('exclude_id') exclude_id?: string
+  ) {
+    console.log(`📨 GET /matakuliah/check/duplicate`, { nama_matakuliah, id_dosen, exclude_id });
+    
+    if (!nama_matakuliah || !id_dosen) {
+      return {
+        status: 'false',
+        message: 'Parameter nama_matakuliah dan id_dosen diperlukan'
+      };
+    }
+
+    const result = await this.matakuliahService.checkDuplicate(
+      nama_matakuliah,
+      parseInt(id_dosen),
+      exclude_id ? parseInt(exclude_id) : undefined
+    );
+
+    if (result.exists) {
+      return {
+        status: 'success',
+        message: 'Matakuliah dengan kombinasi ini sudah ada',
+        data: {
+          is_duplicate: true,
+          existing_matakuliah: result.data
+        }
+      };
     }
 
     return {
       status: 'success',
-      message: 'Matakuliah retrieved successfully',
+      message: 'Matakuliah dengan kombinasi ini belum ada',
       data: {
-        id_matakuliah: mk.id_matakuliah,
-        nama_matakuliah: mk.nama_matakuliah,
-        id_dosen: mk.id_dosen,
-        sks: mk.sks,
-      },
+        is_duplicate: false
+      }
     };
   }
 
-  @Put(':id_matakuliah')
-  async update(
-    @Param('id_matakuliah') idParam: string,
-    @Body() dto: UpdateMataKuliahDto,
+  @Get('search/by-dosen')
+  @Roles('admin', 'mahasiswa')
+  async findByNamaAndDosen(
+    @Query('nama') nama: string,
+    @Query('id_dosen') id_dosen: string
   ) {
-    const id = parseInt(idParam, 10);
-    const mk = await this.matakuliahService.updateById(id, dto);
+    console.log(`📨 GET /matakuliah/search/by-dosen`, { nama, id_dosen });
+    
+    if (!nama || !id_dosen) {
+      return {
+        status: 'false',
+        message: 'Parameter nama dan id_dosen diperlukan'
+      };
+    }
 
-    return {
-      status: 'success',
-      message: 'Matakuliah updated successfully',
-      data: {
-        id_matakuliah: mk.id_matakuliah,
-        nama_matakuliah: mk.nama_matakuliah,
-        id_dosen: mk.id_dosen,
-        sks: mk.sks,
-      },
-    };
-  }
-
-  @Delete(':id_matakuliah')
-  async remove(@Param('id_matakuliah') idParam: string) {
-    const id = parseInt(idParam, 10);
-    await this.matakuliahService.removeById(id);
-
-    return {
-      status: 'success',
-      message: 'Matakuliah deleted successfully',
-    };
+    return await this.matakuliahService.findByNamaAndDosen(
+      nama,
+      parseInt(id_dosen)
+    );
   }
 }
