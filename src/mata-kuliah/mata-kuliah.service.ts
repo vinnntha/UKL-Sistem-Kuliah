@@ -1,0 +1,132 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateMataKuliahDto } from './dto/create-mata-kuliah.dto';
+import { UpdateMataKuliahDto } from './dto/update-mata-kuliah.dto';
+
+@Injectable()
+export class MataKuliahService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(dto: CreateMataKuliahDto) {
+    const { nama_matakuliah, id_dosen, sks } = dto;
+
+    if (sks < 1 || sks > 6) {
+      throw new BadRequestException({
+        status: 'error',
+        message: 'SKS harus antara 1 sampai 6',
+      });
+    }
+
+    try {
+      const mk = await this.prisma.matakuliah.create({
+        data: {
+          nama_matakuliah,
+          sks,
+          id_dosen: id_dosen,
+        },
+      });
+
+      return mk;
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException({
+          status: 'error',
+          message: `Dosen dengan NIDN ${id_dosen} tidak ditemukan`,
+        });
+      }
+
+      throw new BadRequestException({
+        status: 'error',
+        message: 'Gagal menambah matakuliah',
+      });
+    }
+  }
+
+  async findAll() {
+    try {
+      return await this.prisma.matakuliah.findMany();
+    } catch {
+      throw new BadRequestException({
+        status: 'error',
+        message: 'Gagal mengambil data matakuliah',
+      });
+    }
+  }
+
+  async findOneById(id_matakuliah: number) {
+    try {
+      const mk = await this.prisma.matakuliah.findUnique({
+        where: { id_matakuliah },
+      });
+      return mk;
+    } catch {
+      throw new BadRequestException({
+        status: 'error',
+        message: 'Gagal mengambil detail matakuliah',
+      });
+    }
+  }
+
+  async updateById(id_matakuliah: number, dto: UpdateMataKuliahDto) {
+    if (dto.sks !== undefined && (dto.sks < 1 || dto.sks > 6)) {
+      throw new BadRequestException({
+        status: 'error',
+        message: 'SKS harus antara 1 sampai 6',
+      });
+    }
+
+    try {
+      const mk = await this.prisma.matakuliah.update({
+        where: { id_matakuliah },
+        data: {
+          nama_matakuliah: dto.nama_matakuliah,
+          sks: dto.sks,
+          ...(dto.id_dosen !== undefined && {
+            dosen_nidn: dto.id_dosen,
+          }),
+        },
+      });
+
+      return mk;
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new BadRequestException({
+          status: 'error',
+          message: `Matakuliah dengan id ${id_matakuliah} tidak ditemukan`,
+        });
+      }
+
+      if (error.code === 'P2003') {
+        throw new BadRequestException({
+          status: 'error',
+          message: `Dosen dengan NIDN ${dto.id_dosen} tidak ditemukan`,
+        });
+      }
+
+      throw new BadRequestException({
+        status: 'error',
+        message: 'Gagal mengupdate matakuliah',
+      });
+    }
+  }
+
+  async removeById(id_matakuliah: number) {
+    try {
+      await this.prisma.matakuliah.delete({
+        where: { id_matakuliah },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new BadRequestException({
+          status: 'error',
+          message: `Matakuliah dengan id ${id_matakuliah} tidak ditemukan`,
+        });
+      }
+
+      throw new BadRequestException({
+        status: 'error',
+        message: 'Gagal menghapus matakuliah',
+      });
+    }
+  }
+}
