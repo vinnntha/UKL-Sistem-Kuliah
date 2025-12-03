@@ -37,6 +37,8 @@ export class PilihMahasiswaService {
 
   private parseJadwal(jadwal: string): { hari: string; jamMulai: string; jamSelesai: string } {
     try {
+
+      
       const [hari, waktu] = jadwal.split(' ');
       const [jamMulai, jamSelesai] = waktu.split('-');
       return { hari, jamMulai, jamSelesai };
@@ -78,25 +80,28 @@ export class PilihMahasiswaService {
     try {
       const { mahasiswa_id, matakuliah_ids } = pilihMatakuliahDto;
 
-      console.log('=== PILIH MATKUL START ===');
-      console.log('Mahasiswa ID:', mahasiswa_id);
-      console.log('Matakuliah IDs:', matakuliah_ids);
+      const krsExist = await this.prisma.krs.findFirst({
+        where: {
+          mahasiswa_id: mahasiswa_id
+        },
+      });
 
-      console.log('🔍 Mencari mahasiswa dengan ID:', mahasiswa_id);
+      if (!krsExist) {
+        return {
+          status: 'false',
+          message: 'Pilihan matakuliah tidak ditemukan',
+        };
+      }
+
       const mahasiswa = await this.prisma.mahasiswa.findUnique({
         where: { id: mahasiswa_id },
       });
 
-      console.log('Hasil pencarian mahasiswa:', mahasiswa);
-
-      if (!mahasiswa) {
-        console.log('Mahasiswa TIDAK DITEMUKAN');
-        
+      if (!mahasiswa) {        
         const semuaMahasiswa = await this.prisma.mahasiswa.findMany({
           select: { id: true, nim: true, nama_mahasiswa: true }
         });
-        console.log('Semua mahasiswa yang ada:', semuaMahasiswa);
-        
+              
         return {
           status: 'false',
           message: `Mahasiswa dengan ID ${mahasiswa_id} tidak ditemukan. Data mahasiswa yang tersedia: ${JSON.stringify(semuaMahasiswa)}`,

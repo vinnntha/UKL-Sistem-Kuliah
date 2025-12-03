@@ -1,5 +1,5 @@
 // mahasiswa/mahasiswa.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from '@nestjs/common';
 import { MahasiswaService } from './mahasiswa.service';
 import { CreateMahasiswaDto } from './dto/create-mahasiswa.dto';
 import { UpdateMahasiswaDto } from './dto/update-mahasiswa.dto';
@@ -41,7 +41,7 @@ export class MahasiswaController {
     return this.mahasiswaService.findByJurusan(jurusan);
   }
 
-  @Patch(':nim')
+  @Put(':nim')
   @Roles('admin')
   updateByNim(@Param('nim') nim: string, @Body() updateMahasiswaDto: UpdateMahasiswaDto) {
     return this.mahasiswaService.updateByNim(nim, updateMahasiswaDto);

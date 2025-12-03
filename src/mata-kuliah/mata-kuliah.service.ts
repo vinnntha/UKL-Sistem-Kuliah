@@ -1,6 +1,7 @@
 // mata-kuliah/mata-kuliah.service.ts - UPDATE DENGAN SEMUA METHOD
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Mahasiswa } from 'src/mahasiswa/entities/mahasiswa.entity';
 
 @Injectable()
 export class MataKuliahService {

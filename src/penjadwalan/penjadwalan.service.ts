@@ -250,7 +250,7 @@ export class PenjadwalanService {
         };
       }
 
-      // Validasi jika ada update id_dosen
+    
       if (updatePenjadwalanDto.id_dosen) {
         const dosenExist = await this.prisma.dosen.findUnique({
           where: { id: updatePenjadwalanDto.id_dosen },

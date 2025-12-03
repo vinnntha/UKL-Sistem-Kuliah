@@ -9,8 +9,17 @@ export class DosenService {
 
   async create(createDosenDto: CreateDosenDto) {
     const { nidn, nama_dosen, jenis_kelamin, alamat } = createDosenDto;
-    
+
     try {
+
+      const validJenisKelamin = ['L', 'P', 'l', 'p'];
+      if (!validJenisKelamin.includes(jenis_kelamin)) {
+        return {
+          status: 'false',
+          message: 'Jenis kelamin harus L atau P',
+        };
+      }
+
       const dosen = await this.prisma.dosen.create({
         data: {
           nidn,
@@ -27,14 +36,14 @@ export class DosenService {
       };
     } catch (error) {
       console.error('Error creating dosen:', error);
-      
+
       if (error.code === 'P2002') {
         return {
           status: 'false',
           message: `NIDN ${nidn} sudah digunakan`,
         };
       }
-      
+
       return {
         status: 'false',
         message: 'Gagal menambah dosen',
@@ -93,7 +102,15 @@ export class DosenService {
 
   async updateByid(id: number, updateDosenDto: UpdateDosenDto) {
     try {
-      // Cek apakah dosen exist
+      const { jenis_kelamin } = updateDosenDto
+      const validJenisKelamin = ['L', 'P', 'l', 'p'];
+      if (jenis_kelamin && !validJenisKelamin.includes(jenis_kelamin)) {
+        return {
+          status: 'false',
+          message: 'Jenis kelamin harus L atau P',
+        };
+      }
+
       const existingDosen = await this.prisma.dosen.findUnique({
         where: { id },
       });
@@ -117,14 +134,14 @@ export class DosenService {
       };
     } catch (error) {
       console.error('Error updating dosen:', error);
-      
+
       if (error.code === 'P2025') {
         return {
           status: 'false',
           message: `Dosen dengan ID ${id} tidak ditemukan`,
         };
       }
-      
+
       return {
         status: 'false',
         message: 'Gagal mengupdate dosen',
@@ -168,14 +185,14 @@ export class DosenService {
       };
     } catch (error) {
       console.error('Error removing dosen:', error);
-      
+
       if (error.code === 'P2025') {
         return {
           status: 'false',
           message: `Dosen dengan ID ${id} tidak ditemukan`,
         };
       }
-      
+
       return {
         status: 'false',
         message: 'Gagal menghapus dosen',
