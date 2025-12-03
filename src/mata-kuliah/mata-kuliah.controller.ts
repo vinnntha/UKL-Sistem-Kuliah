@@ -17,7 +17,7 @@ import { RolesGuard } from 'src/auth/roles.guards';
 import { Roles } from 'src/auth/roles.decotator';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('admin')
 @Controller('api/matakuliah')
 export class MataKuliahController {
   constructor(private readonly matakuliahService: MataKuliahService) {}

@@ -187,11 +187,10 @@ export class AuthService {
   try {
     console.log('Login attempt for:', username);
     
-    // Cari user dengan INCLUDE mahasiswa
     const user = await this.prisma.user.findUnique({
       where: { username },
       include: {
-        mahasiswa: true, // INCLUDE relation
+        mahasiswa: true, 
       },
     });
 
@@ -200,14 +199,12 @@ export class AuthService {
       throw new UnauthorizedException('Username atau password salah');
     }
 
-    // Verifikasi password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.log('Invalid password for:', username);
       throw new UnauthorizedException('Username atau password salah');
     }
 
-    // Debug: Cek data user
     console.log('User data:', {
       id: user.id,
       username: user.username,
@@ -216,7 +213,6 @@ export class AuthService {
       mahasiswa: user.mahasiswa
     });
 
-    // Buat payload JWT - PASTIKAN mahasiswa_id diambil dari user.mahasiswaId
     const payload = {
       sub: user.id,
       username: user.username,

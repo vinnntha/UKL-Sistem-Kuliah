@@ -28,7 +28,6 @@ export class DosenService {
     } catch (error) {
       console.error('Error creating dosen:', error);
       
-      // Cek error code untuk memberikan pesan yang lebih spesifik
       if (error.code === 'P2002') {
         return {
           status: 'false',

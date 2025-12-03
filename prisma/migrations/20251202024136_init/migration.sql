@@ -3,7 +3,7 @@ CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
-    `role` ENUM('ADMIN', 'MAHASISWA') NOT NULL,
+    `role` ENUM('admin', 'MAHASISWA') NOT NULL,
 
     UNIQUE INDEX `User_username_key`(`username`),
     PRIMARY KEY (`id`)

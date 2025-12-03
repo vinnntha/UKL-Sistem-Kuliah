@@ -12,43 +12,43 @@ export class MahasiswaController {
   constructor(private readonly mahasiswaService: MahasiswaService) {} // GUNAKAN MAHASISWA SERVICE
 
   @Post()
-  @Roles('ADMIN')
+  @Roles('admin')
   create(@Body() createMahasiswaDto: CreateMahasiswaDto) {
     return this.mahasiswaService.create(createMahasiswaDto);
   }
 
   @Get()
-  @Roles('ADMIN')
+  @Roles('admin')
   findAll() {
     return this.mahasiswaService.findAll();
   }
 
   @Get(':nim')
-  @Roles('ADMIN', 'mahasiswa')
+  @Roles('admin', 'mahasiswa')
   findByNim(@Param('nim') nim: string) {
     return this.mahasiswaService.findByNim(nim);
   }
 
   @Get('id/:id')
-  @Roles('ADMIN')
+  @Roles('admin')
   findById(@Param('id') id: string) {
     return this.mahasiswaService.findById(+id);
   }
 
   @Get('jurusan/:jurusan')
-  @Roles('ADMIN')
+  @Roles('admin')
   findByJurusan(@Param('jurusan') jurusan: string) {
     return this.mahasiswaService.findByJurusan(jurusan);
   }
 
   @Patch(':nim')
-  @Roles('ADMIN')
+  @Roles('admin')
   updateByNim(@Param('nim') nim: string, @Body() updateMahasiswaDto: UpdateMahasiswaDto) {
     return this.mahasiswaService.updateByNim(nim, updateMahasiswaDto);
   }
 
   @Delete(':nim')
-  @Roles('ADMIN')
+  @Roles('admin')
   removeByNim(@Param('nim') nim: string) {
     return this.mahasiswaService.removeByNim(nim);
   }

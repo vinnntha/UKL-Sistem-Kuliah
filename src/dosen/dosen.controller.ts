@@ -12,37 +12,37 @@ export class DosenController {
   constructor(private readonly dosenService: DosenService) {}
 
   @Post()
-  @Roles('ADMIN')
+  @Roles('admin')
   create(@Body() createDosenDto: CreateDosenDto) {
     return this.dosenService.create(createDosenDto);
   }
 
   @Get()
-  @Roles('ADMIN')
+  @Roles('admin')
   findAll() {
     return this.dosenService.findAll();
   }
 
   @Get(':id')
-  @Roles('ADMIN')
+  @Roles('admin')
   findOneByid(@Param('id') id: string) {
     return this.dosenService.findOneByid(+id);
   }
 
   @Get('nidn/:nidn')
-  @Roles('ADMIN')
+  @Roles('admin')
   findByNidn(@Param('nidn') nidn: string) {
     return this.dosenService.findByNidn(+nidn);
   }
 
   @Put(':id')
-  @Roles('ADMIN')
+  @Roles('admin')
   updateByid(@Param('id') id: string, @Body() updateDosenDto: UpdateDosenDto) {
     return this.dosenService.updateByid(+id, updateDosenDto);
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Roles('admin')
   removeByid(@Param('id') id: string) {
     return this.dosenService.removeByid(+id);
   }
